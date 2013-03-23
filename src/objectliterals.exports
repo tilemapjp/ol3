@@ -178,6 +178,12 @@
 @exportObjectLiteralProperty ol.source.TiledWMSOptions.url string|undefined
 @exportObjectLiteralProperty ol.source.TiledWMSOptions.urls Array.<string>|undefined
 
+@exportObjectLiteral ol.source.VectorSource2Options
+@exportObjectLiteralProperty ol.source.VectorSource2Options.attributions Array.<ol.Attribution>|undefined
+@exportObjectLiteralProperty ol.source.VectorSource2Options.extent ol.Extent|undefined
+@exportObjectLiteralProperty ol.source.VectorSource2Options.pointCollections Array.<ol.geom2.PointCollection>|undefined
+@exportObjectLiteralProperty ol.source.VectorSource2Options.projection ol.ProjectionLike
+
 @exportObjectLiteral ol.style.IconOptions
 @exportObjectLiteralProperty ol.style.IconOptions.url string|ol.Expression
 @exportObjectLiteralProperty ol.style.IconOptions.width number|ol.Expression|undefined
