@@ -85,9 +85,7 @@ ol.structs.Buffer.prototype.add = function(values) {
   for (i = 0; i < size; ++i) {
     this.arr_[offset + i] = values[i];
   }
-  for (i = 0; i < this.dirtySets_.length; ++i) {
-    this.dirtySets_[i].addRange(offset, offset + size);
-  }
+  this.markDirty(size, offset);
   return offset;
 };
 
@@ -149,6 +147,18 @@ ol.structs.Buffer.prototype.getUsage = function() {
  * @param {number} size Size.
  * @param {number} offset Offset.
  */
+ol.structs.Buffer.prototype.markDirty = function(size, offset) {
+  var i;
+  for (i = 0; i < this.dirtySets_.length; ++i) {
+    this.dirtySets_[i].addRange(offset, offset + size);
+  }
+};
+
+
+/**
+ * @param {number} size Size.
+ * @param {number} offset Offset.
+ */
 ol.structs.Buffer.prototype.remove = function(size, offset) {
   var i;
   this.freeSet_.addRange(offset, offset + size);
@@ -185,7 +195,5 @@ ol.structs.Buffer.prototype.set = function(values, offset) {
   for (i = 0; i < n; ++i) {
     arr[offset + i] = values[i];
   }
-  for (i = 0; i < this.dirtySets_.length; ++i) {
-    this.dirtySets_[i].addRange(offset, offset + n);
-  }
+  this.markDirty(n, offset);
 };
