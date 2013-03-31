@@ -313,7 +313,9 @@ def _strip_comments(lines):
     # here
     in_multiline_comment = False
     lineno = 0
+    buf = ''
     for line in lines:
+        line = line.strip()
         lineno += 1
         if in_multiline_comment:
             index = line.find('*/')
@@ -325,10 +327,18 @@ def _strip_comments(lines):
             line = re.sub(r'/\*.*?\*/', '', line)
             index = line.find('/*')
             if index != -1:
-                yield lineno, line[:index]
+                yield lineno, buf + line[:index]
+                buf = ''
                 in_multiline_comment = True
             else:
-                yield lineno, line
+                if line.endswith('.'):
+                    print line
+                    buf += line
+                else:
+                    if buf != '':
+                        print buf + line
+                    yield lineno, buf + line
+                    buf = ''
 
 
 @target('build/check-requires-timestamp', SRC, INTERNAL_SRC, EXTERNAL_SRC,

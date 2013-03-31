@@ -16,9 +16,11 @@ goog.require('ol.Size');
 goog.require('ol.Tile');
 goog.require('ol.layer.ImageLayer');
 goog.require('ol.layer.TileLayer');
+goog.require('ol.layer.VectorLayer2');
 goog.require('ol.renderer.Map');
 goog.require('ol.renderer.webgl.ImageLayer');
 goog.require('ol.renderer.webgl.TileLayer');
+goog.require('ol.renderer.webgl.VectorLayer2');
 goog.require('ol.renderer.webgl.map.shader');
 goog.require('ol.structs.Buffer');
 goog.require('ol.structs.IntegerSet');
@@ -319,6 +321,8 @@ ol.renderer.webgl.Map.prototype.createLayerRenderer = function(layer) {
     layerRenderer = new ol.renderer.webgl.TileLayer(this, layer);
   } else if (layer instanceof ol.layer.ImageLayer) {
     layerRenderer = new ol.renderer.webgl.ImageLayer(this, layer);
+  } else if (layer instanceof ol.layer.VectorLayer2) {
+    layerRenderer = new ol.renderer.webgl.VectorLayer2(this, layer);
   } else {
     goog.asserts.assert(false);
   }

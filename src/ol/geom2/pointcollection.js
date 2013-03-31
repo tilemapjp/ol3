@@ -2,6 +2,7 @@ goog.provide('ol.geom2.Point');
 goog.provide('ol.geom2.PointCollection');
 
 goog.require('ol.Extent');
+goog.require('ol.geom2');
 goog.require('ol.structs.Buffer');
 
 
@@ -58,16 +59,7 @@ ol.geom2.PointCollection.pack =
   var capacity = goog.isDef(opt_capacity) ? opt_capacity : n * dim;
   goog.asserts.assert(capacity >= n * dim);
   var arr = new Array(capacity);
-  var arrIndex = 0;
-  var i, j, point;
-  for (i = 0; i < n; ++i) {
-    point = unpackedPoints[i];
-    goog.asserts.assert(point.length == dim);
-    for (j = 0; j < dim; ++j) {
-      arr[arrIndex++] = point[j];
-    }
-  }
-  goog.asserts.assert(arrIndex == n * dim);
+  ol.geom2.packPoints(arr, 0, unpackedPoints, dim);
   var buf = new ol.structs.Buffer(arr, n * dim);
   return new ol.geom2.PointCollection(buf, dim);
 };
@@ -108,17 +100,7 @@ ol.geom2.PointCollection.prototype.getCount = function() {
  * @return {ol.Extent} Extent.
  */
 ol.geom2.PointCollection.prototype.getExtent = function() {
-  var dim = this.dim;
-  goog.asserts.assert(dim >= 2);
-  var bufArr = this.buf.getArray();
-  var extent = ol.Extent.createEmptyExtent();
-  this.buf.forEachRange(function(start, stop) {
-    var i;
-    for (i = start; i < stop; i += dim) {
-      extent.extendXY(bufArr[i], bufArr[i + 1]);
-    }
-  });
-  return extent;
+  return ol.geom2.getExtent(this.buf, this.dim);
 };
 
 
@@ -146,14 +128,14 @@ ol.geom2.PointCollection.prototype.unpack = function() {
   var dim = this.dim;
   var n = this.getCount();
   var points = new Array(n);
-  var pointsIndex = 0;
+  var i = 0;
   var bufArr = this.buf.getArray();
   this.buf.forEachRange(function(start, stop) {
-    var i;
-    for (i = start; i < stop; i += dim) {
-      points[pointsIndex++] = bufArr.slice(i, i + dim);
+    var j;
+    for (j = start; j < stop; j += dim) {
+      points[i++] = bufArr.slice(j, j + dim);
     }
   });
-  goog.asserts.assert(pointsIndex == n);
+  goog.asserts.assert(i == n);
   return points;
 };
