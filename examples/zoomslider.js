@@ -21,6 +21,7 @@ var createMap = function(divId) {
   map = new ol.Map({
     layers: [layer],
     target: divId,
+    renderer: ol.RendererHint.CANVAS, //DOM,
     view: new ol.View2D({
       center: [0, 0],
       zoom: 2

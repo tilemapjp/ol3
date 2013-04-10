@@ -91,9 +91,9 @@ ol.interaction.TouchZoom.prototype.handleTouchEnd =
     // Zoom to final resolution, with an animation, and provide a
     // direction not to zoom out/in if user was pinching in/out.
     // Direction is > 0 if pinching out, and < 0 if pinching in.
-    var direction = this.lastScaleDelta_ - 1;
-    view.zoom(map, view.getResolution(), undefined,
-        ol.interaction.TOUCHZOOM_ANIMATION_DURATION, direction);
+    ////var direction = this.lastScaleDelta_ - 1;
+    ////view.zoom(map, view.getResolution(), undefined,
+    ////    ol.interaction.TOUCHZOOM_ANIMATION_DURATION, direction);
     view.setHint(ol.ViewHint.INTERACTING, -1);
     return false;
   } else {
