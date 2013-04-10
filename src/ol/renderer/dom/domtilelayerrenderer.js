@@ -14,6 +14,7 @@ goog.require('ol.Coordinate');
 goog.require('ol.Extent');
 goog.require('ol.Tile');
 goog.require('ol.TileCoord');
+goog.require('ol.TileRange');
 goog.require('ol.TileState');
 goog.require('ol.ViewHint');
 goog.require('ol.dom');
@@ -115,7 +116,9 @@ ol.renderer.dom.TileLayer.prototype.renderFrame =
       tilesToDrawByZ, getTileIfLoaded);
 
   var allTilesLoaded = true;
-  var tile, tileState, x, y;
+  var tmpExtent = new ol.Extent(0, 0, 0, 0);
+  var tmpTileRange = new ol.TileRange(0, 0, 0, 0);
+  var childTileRange, fullyLoaded, tile, tileState, x, y;
   for (x = tileRange.minX; x <= tileRange.maxX; ++x) {
     for (y = tileRange.minY; y <= tileRange.maxY; ++y) {
 
@@ -130,7 +133,15 @@ ol.renderer.dom.TileLayer.prototype.renderFrame =
       }
 
       allTilesLoaded = false;
-      tileGrid.forEachTileCoordParentTileRange(tile.tileCoord, findLoadedTiles);
+      fullyLoaded = tileGrid.forEachTileCoordParentTileRange(
+          tile.tileCoord, findLoadedTiles, null, tmpTileRange, tmpExtent);
+      if (!fullyLoaded) {
+        childTileRange = tileGrid.getTileCoordChildTileRange(
+            tile.tileCoord, tmpTileRange, tmpExtent);
+        if (!goog.isNull(childTileRange)) {
+          findLoadedTiles(z + 1, childTileRange);
+        }
+      }
 
     }
 
@@ -205,7 +216,7 @@ ol.renderer.dom.TileLayer.prototype.renderFrame =
     } else {
       if (!frameState.viewHints[ol.ViewHint.ANIMATING] &&
           !frameState.viewHints[ol.ViewHint.INTERACTING]) {
-        tileLayerZ.removeTilesOutsideExtent(extent);
+        tileLayerZ.removeTilesOutsideExtent(extent, tmpTileRange);
       }
     }
   }
@@ -344,11 +355,12 @@ ol.renderer.dom.TileLayerZ_.prototype.getResolution = function() {
 
 /**
  * @param {ol.Extent} extent Extent.
+ * @param {ol.TileRange=} opt_tileRange Temporary ol.TileRange object.
  */
 ol.renderer.dom.TileLayerZ_.prototype.removeTilesOutsideExtent =
-    function(extent) {
-  var tileRange =
-      this.tileGrid_.getTileRangeForExtentAndZ(extent, this.tileCoordOrigin_.z);
+    function(extent, opt_tileRange) {
+  var tileRange = this.tileGrid_.getTileRangeForExtentAndZ(
+      extent, this.tileCoordOrigin_.z, opt_tileRange);
   var tilesToRemove = [];
   var tile, tileCoordKey;
   for (tileCoordKey in this.tiles_) {
