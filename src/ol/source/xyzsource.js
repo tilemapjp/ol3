@@ -24,7 +24,8 @@ goog.require('ol.tilegrid.XYZ');
  *            projection: (ol.Projection|undefined),
  *            tileUrlFunction: (ol.TileUrlFunctionType|undefined),
  *            url: (string|undefined),
- *            urls: (Array.<string>|undefined)}}
+ *            urls: (Array.<string>|undefined),
+ *            scheme: (string|undefined)}}
  */
 ol.source.XYZOptions;
 
@@ -38,6 +39,8 @@ ol.source.XYZOptions;
 ol.source.XYZ = function(options) {
 
   var projection = options.projection || ol.projection.get('EPSG:3857');
+
+  var scheme     = options.scheme     || 'xyz';
 
   /**
    * @type {ol.TileUrlFunctionType}
@@ -69,7 +72,7 @@ ol.source.XYZ = function(options) {
             return null;
           }
           var n = 1 << tileCoord.z;
-          var y = -tileCoord.y - 1;
+          var y = scheme == 'tms' ? n + tileCoord.y : -tileCoord.y - 1;
           if (y < 0 || n <= y) {
             return null;
           }
@@ -94,7 +97,7 @@ ol.source.XYZ = function(options) {
             return null;
           }
           var n = 1 << tileCoord.z;
-          var y = -tileCoord.y - 1;
+          var y = scheme == 'tms' ? n + tileCoord.y : -tileCoord.y - 1;
           if (y < 0 || n <= y) {
             return null;
           } else {

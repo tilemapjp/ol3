@@ -9,7 +9,7 @@ var map = new ol.Map({
   layers: [
     new ol.layer.TileLayer({
       source: new ol.source.TileJSON({
-        url: 'http://api.tiles.mapbox.com/v3/mapbox.geography-class.jsonp',
+        url: 'http://test.tilemap.jp/ol3/examples/mapbox.geography-class.jsonp',
         crossOrigin: 'anonymous'
       })
     })

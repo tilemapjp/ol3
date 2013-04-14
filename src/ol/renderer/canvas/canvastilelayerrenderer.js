@@ -19,8 +19,6 @@ goog.require('ol.layer.TileLayer');
 goog.require('ol.renderer.Map');
 goog.require('ol.renderer.canvas.Layer');
 
-
-
 /**
  * @constructor
  * @extends {ol.renderer.canvas.Layer}
@@ -75,7 +73,6 @@ ol.renderer.canvas.TileLayer = function(mapRenderer, tileLayer) {
 
 };
 goog.inherits(ol.renderer.canvas.TileLayer, ol.renderer.canvas.Layer);
-
 
 /**
  * @inheritDoc
@@ -320,6 +317,7 @@ ol.renderer.canvas.TileLayer.prototype.renderFrame =
   var currentZ, index, scale, tileCoordKey, tileExtent, tilesToDraw;
   var ix, iy, interimTileExtent, interimTileRange, maxX, maxY;
   var height, width;
+
   for (i = 0; i < zs.length; ++i) {
     currentZ = zs[i];
     tileSize = tileGrid.getTileSize(currentZ);
@@ -338,7 +336,17 @@ ol.renderer.canvas.TileLayer.prototype.renderFrame =
             context.clearRect(x, y, tileSize.width, tileSize.height);
           }
           if (tileState == ol.TileState.LOADED) {
-            context.drawImage(tile.getImage(), x, y);
+            var img = tile.getImage();
+            var imgWidth  = img.naturalWidth || 0;
+            var imgHeight = img.naturalHeight || 0;
+            context.drawImage(img, x, y, imgWidth, imgHeight);
+
+            if (imgWidth  < tileSize.width) {
+              context.clearRect(x + imgWidth, y, tileSize.width - imgWidth, tileSize.height);
+            }
+            if (imgHeight < tileSize.height) {
+              context.clearRect(x, y + imgHeight, tileSize.width, tileSize.height - imgHeight);
+            }
           }
           this.renderedTiles_[index] = tile;
         }
@@ -353,11 +361,22 @@ ol.renderer.canvas.TileLayer.prototype.renderFrame =
         width = scale * tileSize.width;
         height = scale * tileSize.height;
         tileState = tile.getState();
-        if (tileState == ol.TileState.EMPTY || !opaque) {
+        if (tileState == ol.TileState.EMPTY || tileState == ol.TileState.ERROR || !opaque) {
           context.clearRect(x, y, width, height);
         }
         if (tileState == ol.TileState.LOADED) {
           context.drawImage(tile.getImage(), x, y, width, height);
+          var img = tile.getImage();
+          var imgWidth  = img.naturalWidth  * scale || 0;
+          var imgHeight = img.naturalHeight * scale || 0;
+
+          context.drawImage(img, x, y, imgWidth, imgHeight);
+          if (imgWidth  < width) {
+            context.clearRect(x + imgWidth, y, width - imgWidth, height);
+          }
+          if (imgHeight < height) {
+            context.clearRect(x, y + imgHeight, width, height - imgHeight);
+          }
         }
         interimTileRange =
             tileGrid.getTileRangeForExtentAndZ(tileExtent, z, tmpTileRange);
