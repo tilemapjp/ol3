@@ -276,10 +276,8 @@ ol.renderer.canvas.TileLayer.prototype.renderFrame =
 
       tile = tileSource.getTile(z, x, y, projection);
       tileState = tile.getState();
-      if (tileState == ol.TileState.LOADED || tileState == ol.TileState.EMPTY) {
+      if (tileState == ol.TileState.LOADED || tileState == ol.TileState.EMPTY || tileState == ol.TileState.ERROR) {
         tilesToDrawByZ[z][tile.tileCoord.toString()] = tile;
-        continue;
-      } else if (tileState == ol.TileState.ERROR) {
         continue;
       }
 

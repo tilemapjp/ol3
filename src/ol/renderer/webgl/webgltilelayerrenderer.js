@@ -238,6 +238,7 @@ ol.renderer.webgl.TileLayer.prototype.renderFrame =
     goog.array.sort(zs);
     var u_tileOffset = goog.vec.Vec4.createFloat32();
     goog.array.forEach(zs, function(z) {
+      var tileSize  = tileGrid.getTileSize(z);
       goog.object.forEach(tilesToDrawByZ[z], function(tile) {
         var tileExtent = tileGrid.getTileCoordExtent(tile.tileCoord, tmpExtent);
         var sx = 2 * tileExtent.getWidth() / framebufferExtentSize.width;
@@ -246,6 +247,20 @@ ol.renderer.webgl.TileLayer.prototype.renderFrame =
             framebufferExtentSize.width - 1;
         var ty = 2 * (tileExtent.minY - framebufferExtent.minY) /
             framebufferExtentSize.height - 1;
+
+        var img = tile.getImage();
+        var imgWidth  = img.naturalWidth || 0;
+        var imgHeight = img.naturalHeight || 0;
+
+        if (imgWidth  < tileSize.width) {
+          sx = sx * imgWidth / tileSize.width;
+        }
+        if (imgHeight < tileSize.height) {
+          var scale = imgHeight / tileSize.height;
+          ty = ty + sy * (1.0 - scale);
+          sy = sy * scale;
+        }
+
         goog.vec.Vec4.setFromValues(u_tileOffset, sx, sy, tx, ty);
         gl.uniform4fv(this.locations_.u_tileOffset, u_tileOffset);
         mapRenderer.bindTileTexture(tile, goog.webgl.LINEAR, goog.webgl.LINEAR);
