@@ -81,7 +81,7 @@ var layers = [
 
 var map = new ol.Map({
   layers: layers,
-  renderer: ol.RendererHint.WEBGL,
+  renderer: ol.RendererHint.CANVAS,
   target: 'map',
   view: new ol.View2D({
     center: ol.projection.transform([-123.1, 49.25], 'EPSG:4326', 'EPSG:3857'),
@@ -91,7 +91,7 @@ var map = new ol.Map({
 
 var map2 = new ol.Map({
   layers: [layer_org],
-  renderer: ol.RendererHint.WEBGL,
+  renderer: ol.RendererHint.CANVAS,
   target: 'map2',
   view: new ol.View2D({
     center: [500,500],
